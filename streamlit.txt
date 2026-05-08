@@ -1,0 +1,10 @@
+# Enlace a la aplicación desplegada en Streamlit Community Cloud
+# (Pendiente de despliegue)
+
+# Instrucciones para desplegar:
+# 1. Crear cuenta en https://streamlit.io/cloud
+# 2. Conectar con tu repositorio de GitHub
+# 3. Configurar secrets (OPENROUTER_API_KEY) en la configuración de la app
+# 4. Añadir aquí el enlace público una vez desplegado
+
+https://tu-app.streamlit.app

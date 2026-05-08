@@ -1,0 +1,70 @@
+# CV DE EJEMPLO PARA TESTING
+
+Juan Pérez García
+Desarrollador Full Stack Senior
+Email: juan.perez@example.com
+Teléfono: +34 600 123 456
+LinkedIn: linkedin.com/in/juanperez
+GitHub: github.com/juanperez
+
+## RESUMEN PROFESIONAL
+
+Desarrollador Full Stack con 7 años de experiencia en el diseño y desarrollo de aplicaciones web escalables. Especializado en React, Node.js y Python. Experiencia liderando equipos de desarrollo y aplicando metodologías ágiles.
+
+## EXPERIENCIA PROFESIONAL
+
+### Senior Full Stack Developer | Tech Solutions S.L.
+Madrid, España | Enero 2021 - Presente
+
+- Desarrollo de aplicaciones web usando React, Node.js y MongoDB
+- Liderazgo de equipo de 5 desarrolladores
+- Implementación de CI/CD con Docker y Kubernetes
+- Reducción del tiempo de despliegue en un 60%
+
+### Full Stack Developer | Digital Innovations
+Madrid, España | Junio 2018 - Diciembre 2020
+
+- Desarrollo frontend con React y Angular
+- Backend con Node.js y Express
+- Integración de APIs RESTful y GraphQL
+- Mejora del rendimiento de la aplicación en un 40%
+
+### Junior Developer | StartUp Tech
+Madrid, España | Septiembre 2016 - Mayo 2018
+
+- Desarrollo de features para aplicación SaaS
+- Mantenimiento y corrección de bugs
+- Colaboración con equipo de QA
+
+## EDUCACIÓN
+
+### Grado en Ingeniería Informática
+Universidad Politécnica de Madrid | 2012 - 2016
+
+## HABILIDADES TÉCNICAS
+
+**Lenguajes:** JavaScript, TypeScript, Python, Java
+**Frontend:** React, Angular, Vue.js, HTML5, CSS3
+**Backend:** Node.js, Express, Django, Flask
+**Bases de Datos:** MongoDB, PostgreSQL, MySQL
+**DevOps:** Docker, Kubernetes, CI/CD, AWS
+**Metodologías:** Agile, Scrum, TDD
+
+## IDIOMAS
+
+- Español: Nativo
+- Inglés: Avanzado (C1)
+- Francés: Básico (A2)
+
+## CERTIFICACIONES
+
+- AWS Certified Developer Associate (2022)
+- Professional Scrum Master I (2021)
+
+## PROYECTOS DESTACADOS
+
+### E-commerce Platform
+Desarrollo de plataforma e-commerce completa con React y Node.js. +100,000 usuarios activos.
+
+### Analytics Dashboard
+Dashboard de analíticas en tiempo real con D3.js y WebSockets. Procesamiento de 1M+ eventos/día.

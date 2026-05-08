@@ -1,0 +1,13 @@
+# Enlace al vídeo demostrativo en YouTube
+# Duración máxima: 3 minutos
+# (Pendiente de grabación y publicación)
+
+# Contenido sugerido del vídeo:
+# 1. Introducción al proyecto (15 seg)
+# 2. Demostración de la interfaz (30 seg)
+# 3. Upload de CV y configuración (30 seg)
+# 4. Análisis y resultados (60 seg)
+# 5. Destacar prompt engineering y parseo (30 seg)
+# 6. Conclusiones (15 seg)
+
+https://www.youtube.com/watch?v=TU_VIDEO_ID
