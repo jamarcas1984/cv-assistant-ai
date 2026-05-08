@@ -70,25 +70,22 @@ config:
 flowchart TD
     A([Usuario]) --> B[Configura sector, puesto y experiencia]
     B --> C[Sube el CV]
-    C --> D{Texto extraible?}
-    D -- No --> E[Muestra error al usuario]
-    D -- Si --> F[Extrae y limpia el texto del CV]
-    F --> G[Construye el prompt con contexto e instrucciones]
-    G --> H[Envia el prompt al modelo de IA]
-    H --> I{Respuesta recibida?}
+    C --> D{¿Se puede leer el texto del CV?}
+    D -- No --> E[Muestra un mensaje de error al usuario]
+    D -- Sí --> F[Lee y prepara el texto del CV]
+    F --> G[Prepara las instrucciones para la IA con contexto y ejemplos]
+    G --> H[Consulta al modelo de IA]
+    H --> I{¿La IA respondió correctamente?}
     I -- Error --> E
-    I -- Si --> J[Intenta parsear el JSON directamente]
-    J --> K{Parseo exitoso?}
-    K -- No --> L[Intenta extraer JSON con expresion regular]
-    L --> M{Parseo exitoso?}
-    M -- No --> N[Usa analisis de respaldo generico]
-    M -- Si --> O[Valida que el JSON tiene todos los campos]
-    K -- Si --> O
-    O --> P{Validacion OK?}
+    I -- Sí --> J[Extrae el análisis de la respuesta de la IA]
+    J --> K{¿El análisis está bien formado?}
+    K -- No --> N[Usa un análisis básico alternativo]
+    K -- Sí --> O[Comprueba que el análisis tiene todos los campos necesarios]
+    O --> P{¿El análisis está completo?}
     P -- No --> N
-    P -- Si --> Q[Muestra resultados estructurados al usuario]
+    P -- Sí --> Q[Muestra los resultados al usuario]
     N --> Q
-    Q --> R([Analisis completado])
+    Q --> R([Análisis completado])
 ```
 
 #### Diagrama de Secuencia — Interacción app / LLM
@@ -101,33 +98,33 @@ config:
 ---
 sequenceDiagram
     actor U as Usuario
-    participant UI as Interfaz web
-    participant Texto as Extraccion de texto
-    participant Prompt as Construccion del prompt
+    participant UI as Aplicación web
+    participant L as Lectura del CV
+    participant P as Preparación para la IA
     participant IA as Modelo de IA
-    participant Parser as Parseo de respuesta
+    participant V as Verificación
 
     U->>UI: Configura sector, puesto y experiencia
     U->>UI: Sube el CV
     U->>UI: Pulsa Analizar CV
 
-    UI->>Texto: Extrae texto del archivo
-    Texto-->>UI: Texto limpio del CV
+    UI->>L: Lee el archivo del CV
+    L-->>UI: Texto del CV listo
 
-    UI->>Prompt: Construye prompt con contexto, instrucciones y ejemplos
-    Prompt-->>UI: Prompt completo listo para enviar
+    UI->>P: Prepara las instrucciones con contexto y ejemplos
+    P-->>UI: Instrucciones listas para enviar a la IA
 
-    UI->>IA: Envia prompt con temperatura baja y longitud maxima
-    IA-->>UI: Respuesta JSON con analisis y tokens consumidos
+    UI->>IA: Envía las instrucciones y el texto del CV
+    IA-->>UI: Devuelve el análisis completo
 
-    UI->>Parser: Parsea y valida la respuesta JSON
+    UI->>V: Comprueba que el análisis tiene todos los datos
 
-    alt Respuesta valida
-        Parser-->>UI: Analisis estructurado
-        UI-->>U: Muestra puntuacion, secciones, sugerencias y mejora de ejemplo
-    else Respuesta invalida
-        Parser-->>UI: Analisis de respaldo generico
-        UI-->>U: Muestra analisis basico con opcion de ver respuesta original
+    alt Análisis correcto y completo
+        V-->>UI: Análisis listo para mostrar
+        UI-->>U: Muestra puntuación, secciones, sugerencias y ejemplo mejorado
+    else Análisis incompleto o con errores
+        V-->>UI: Genera un análisis básico alternativo
+        UI-->>U: Muestra un resultado simplificado
     end
 ```
 
@@ -209,14 +206,14 @@ config:
   theme: neutral
 ---
 flowchart TD
-    S([Usuario sube CV y configura contexto])
-    S --> A["Extrae texto según el formato PDF / DOCX / TXT"]
-    A --> B["Limpia y normaliza el texto extraído"]
-    B --> C["Construye el prompt"]
-    C --> D["Llama al modelo"]
-    D --> E["Intenta parsear el JSON de la respuesta 1º intento directo · 2º regex bloque json · 3º regex texto plano"]
-    E --> F["Verifica que todos los campos requeridos existen"]
-    F --> G["Mapea cada campo del JSON a componentes Streamlit"]
+    S([Usuario sube el CV y configura el contexto])
+    S --> A[Lee el texto según el formato del archivo: PDF, Word o TXT]
+    A --> B[Limpia el texto para que la IA lo entienda bien]
+    B --> C[Prepara las instrucciones para la IA]
+    C --> D[Consulta al modelo de IA]
+    D --> E[Extrae el análisis de la respuesta de la IA]
+    E --> F[Comprueba que el análisis tiene todos los campos necesarios]
+    F --> G[Convierte el análisis en elementos visuales para la pantalla]
     G --> Z([Resultados mostrados al usuario])
 ```
 

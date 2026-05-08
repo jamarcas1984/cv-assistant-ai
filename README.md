@@ -96,15 +96,15 @@ config:
   look: handDrawn
   theme: neutral
 ---
-flowchart LR
+flowchart TD
     U([Usuario]) --> A[Configura sector, puesto y experiencia]
-    A --> B[Sube el CV]
-    B --> C[Extrae y limpia el texto]
-    C --> D[Construye el prompt con instrucciones y ejemplos]
-    D --> E[Envia el prompt al modelo de IA]
-    E --> F[Parsea y valida la respuesta JSON]
-    F --> G[Muestra resultados estructurados]
-    G --> R([Analisis completado])
+    A --> B[Sube su CV en PDF, Word o TXT]
+    B --> C[La app lee el texto del CV]
+    C --> D[Prepara las instrucciones para la IA]
+    D --> E[Consulta al modelo de IA]
+    E --> F[Verifica que el análisis esté completo]
+    F --> G[Muestra los resultados en pantalla]
+    G --> R([Análisis completado])
 ```
 
 ### Secuencia de llamada al modelo de IA
@@ -117,20 +117,20 @@ config:
 ---
 sequenceDiagram
     actor U as Usuario
-    participant UI as Interfaz web
+    participant UI as Aplicación web
     participant IA as Modelo de IA
-    participant Parser as Parseo de respuesta
+    participant V as Verificación
 
     U->>UI: Sube el CV y configura el contexto
-    UI->>IA: Envia prompt con instrucciones, ejemplos y texto del CV
-    IA-->>UI: Devuelve analisis en formato JSON
-    UI->>Parser: Parsea y valida la estructura del JSON
-    alt Respuesta valida
-        Parser-->>UI: Analisis estructurado
-        UI-->>U: Muestra puntuacion, secciones, sugerencias y mejora
-    else Respuesta invalida
-        Parser-->>UI: Analisis de respaldo
-        UI-->>U: Muestra resultado basico
+    UI->>IA: Envía las instrucciones y el texto del CV
+    IA-->>UI: Devuelve el análisis completo
+    UI->>V: Comprueba que el análisis tiene todos los datos
+    alt Análisis correcto y completo
+        V-->>UI: Análisis listo para mostrar
+        UI-->>U: Muestra puntuación, secciones, sugerencias y ejemplo mejorado
+    else Análisis incompleto o con errores
+        V-->>UI: Genera un análisis básico alternativo
+        UI-->>U: Muestra un resultado simplificado
     end
 ```
 
