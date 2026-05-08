@@ -210,13 +210,13 @@ config:
 ---
 flowchart TD
     S([Usuario sube CV y configura contexto])
-    S --> A["utils.extract_text_from_file()\nExtrae texto según el formato PDF / DOCX / TXT"]
-    A --> B["utils.clean_cv_text()\nLimpia y normaliza el texto extraído"]
-    B --> C["prompt_templates.create_cv_analysis_prompt()\nConstruye el prompt con contexto, instrucciones,\nfew-shot examples y schema de salida"]
-    C --> D["CVAnalyzer.analyze_cv()\nLlama a OpenRouter API\nmodel: gemini-3.1-flash-lite\ntemperature: 0.2 · max_tokens: 3000 · top_p: 0.85"]
-    D --> E["parsers.parse_cv_analysis()\nIntenta parsear el JSON de la respuesta\n1º intento directo · 2º regex bloque json · 3º regex texto plano"]
-    E --> F["parsers.validate_cv_analysis()\nVerifica que todos los campos requeridos existen"]
-    F --> G["app.render_analysis_results()\nMapea cada campo del JSON a componentes Streamlit"]
+    S --> A["Extrae texto según el formato PDF / DOCX / TXT"]
+    A --> B["Limpia y normaliza el texto extraído"]
+    B --> C["Construye el prompt"]
+    C --> D["Llama al modelo"]
+    D --> E["Intenta parsear el JSON de la respuesta 1º intento directo · 2º regex bloque json · 3º regex texto plano"]
+    E --> F["Verifica que todos los campos requeridos existen"]
+    F --> G["Mapea cada campo del JSON a componentes Streamlit"]
     G --> Z([Resultados mostrados al usuario])
 ```
 
@@ -239,7 +239,7 @@ flowchart TD
 
 El `SYSTEM_PROMPT` define un rol específico y acotado al dominio de RRHH:
 
-```
+```text
 "Eres un experto senior en recursos humanos y revisión de CVs con más de 15 años
 de experiencia. Tu especialidad es analizar CVs y proporcionar feedback estructurado,
 concreto y accionable. Siempre proporcionas respuestas ÚNICAMENTE en formato JSON
@@ -252,7 +252,7 @@ válido, sin texto adicional antes ni después."
 
 Antes de las instrucciones se proporciona el contexto del candidato:
 
-```
+```text
 - Sector objetivo: {sector}
 - Puesto objetivo: {puesto}
 - Años de experiencia declarados: {experiencia}
