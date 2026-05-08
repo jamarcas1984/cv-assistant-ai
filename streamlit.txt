@@ -7,4 +7,4 @@
 # 3. Configurar secrets (OPENROUTER_API_KEY) en la configuración de la app
 # 4. Añadir aquí el enlace público una vez desplegado
 
-https://tu-app.streamlit.app
+https://cv-assistant-ai-ynjx6qsnd6prgwq3m4dipz.streamlit.app/
