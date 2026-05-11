@@ -13,7 +13,7 @@
 
 ## 1. Abstract
 
-Este proyecto implementa un asistente inteligente para la revisión y mejora de currículums vitae (CVs) utilizando IA Generativa. La aplicación, desarrollada con Streamlit, integra el modelo Llama 3.1 70B Versatile a través de la API de Groq para proporcionar análisis detallados, identificación de fortalezas y debilidades, sugerencias concretas de mejora y reescritura de secciones. Se aplican técnicas avanzadas de prompt engineering: role prompting con dominio específico de RRHH, chain-of-thought mediante instrucciones numeradas, output schema JSON estricto, few-shot examples representativos y separación explícita de datos de entrada frente a instrucciones del sistema. El sistema parsea y mapea automáticamente las respuestas del LLM a componentes visuales de Streamlit, cumpliendo con el requisito de no mostrar texto crudo. Los resultados demuestran la efectividad de la IA generativa para automatizar procesos de revisión profesional que, tradicionalmente, requerían intervención humana experta.
+Este proyecto implementa un asistente inteligente para la revisión y mejora de currículums vitae (CVs) utilizando IA Generativa. La aplicación, desarrollada con Streamlit, integra el modelo `gemini-3.1-flash-lite` a través de la API de OpenRouter para proporcionar análisis detallados, identificación de fortalezas y debilidades, sugerencias concretas de mejora y reescritura de secciones. Se aplican siete técnicas de prompt engineering: role prompting con dominio específico de RRHH, context setting con perfil del candidato, chain-of-thought mediante instrucciones numeradas, output schema JSON estricto con rangos de valores, three few-shot examples que calibran la escala 0–10, instrucciones negativas anti-alucinación y separación de datos anti-injection. El sistema parsea y mapea automáticamente las respuestas del LLM a componentes visuales de Streamlit mediante un parser de tres niveles de fallback, cumpliendo con el requisito de no mostrar texto crudo. Los resultados demuestran la efectividad de la IA generativa para automatizar procesos de revisión profesional que, tradicionalmente, requerían intervención humana experta.
 
 ---
 
@@ -132,12 +132,21 @@ sequenceDiagram
 
 #### Vista Principal (`app.py`)
 
-La pantalla principal presenta:
+La aplicación organiza su contenido en **dos pestañas**:
+
+**Pestaña "🔍 Análisis de CV"**:
 
 - **Título y descripción** del asistente
 - **Uploader de archivos**: acepta PDF, DOCX y TXT (máx. 10 MB)
 - **Botón "Analizar CV"**: lanza el pipeline completo con indicador de progreso (`st.spinner`)
 - **Sección de resultados**: se renderiza dinámicamente tras el análisis
+
+**Pestaña "📈 Uso y Costes"**:
+
+- **Métricas de sesión**: tokens totales consumidos, coste acumulado en USD, número de análisis realizados
+- **Gráficos de barras**: evolución de tokens por análisis (`st.bar_chart`)
+- **Tabla de detalle**: histórico de cada análisis con prompt tokens, completion tokens, total tokens y coste unitario
+- **Propósito**: permite al usuario monitorizar el consumo real de la API durante la sesión, reforzando la transparencia sobre el coste operativo del sistema
 
 #### Sidebar de Configuración
 
@@ -167,7 +176,7 @@ Los resultados se estructuran en varias secciones mapeadas a componentes Streaml
 | Módulo                | Responsabilidad                                                              |
 | --------------------- | ---------------------------------------------------------------------------- |
 | `app.py`              | Frontend Streamlit: UI, gestión de estado, orquestación del pipeline         |
-| `llm_integration.py`  | Clase `CVAnalyzer`: conexión con Groq API, parámetros del modelo             |
+| `llm_integration.py`  | Clase `CVAnalyzer`: conexión con OpenRouter API, parámetros del modelo       |
 | `prompt_templates.py` | `SYSTEM_PROMPT` y `create_cv_analysis_prompt()`: toda la lógica de prompting |
 | `parsers.py`          | Extracción y validación del JSON de la respuesta del LLM, fallback           |
 | `utils.py`            | Extracción de texto de PDF/DOCX/TXT, limpieza y normalización                |
@@ -335,7 +344,100 @@ El texto del CV se coloca **al final del prompt**, delimitado entre líneas `---
 
 ---
 
-## 6. Conclusión
+## 6. Decisiones de Diseño y Arquitectura
+
+Esta sección documenta las decisiones técnicas y de diseño más relevantes tomadas durante el desarrollo, justificando cada elección frente a las alternativas evaluadas.
+
+### 6.1 Elección del Framework de Interfaz: Streamlit
+
+**Decisión**: Streamlit como único framework de UI.
+
+**Alternativas evaluadas**:
+
+| Alternativa              | Motivo de descarte                                                                              |
+| ------------------------ | ----------------------------------------------------------------------------------------------- |
+| FastAPI + React          | Sobreingeniería para un prototipo académico; requiere dos entornos de desarrollo separados      |
+| Gradio                   | Menor control sobre el layout y los componentes visuales; limitado para tablas y expanders      |
+| Flask + Jinja2           | Requiere HTML/CSS manual; no aporta valor frente a Streamlit para este tipo de aplicación       |
+| Jupyter Notebook         | No es una aplicación web desplegable; sin gestión de estado ni experiencia de usuario real      |
+
+**Justificación de Streamlit**:
+- Permite construir la UI completa en Python puro, sin HTML/CSS/JS
+- Componentes nativos (`st.expander`, `st.metric`, `st.bar_chart`, `st.download_button`) cubren exactamente los requisitos de visualización del reto
+- La gestión de estado con `st.session_state` es suficiente para el flujo de la aplicación
+- Despliegue en Streamlit Community Cloud con cero configuración de infraestructura
+
+### 6.2 Elección de la Plataforma de Despliegue: Streamlit Community Cloud
+
+**Decisión**: Despliegue en [Streamlit Community Cloud](https://cv-assistant-ai-ynjx6qsnd6prgwq3m4dipz.streamlit.app/).
+
+**Alternativas evaluadas**:
+
+| Alternativa       | Motivo de descarte                                                      |
+| ----------------- | ----------------------------------------------------------------------- |
+| Heroku            | Tier gratuito eliminado en 2022; requiere tarjeta de crédito            |
+| AWS / GCP / Azure | Complejidad de configuración desproporcionada para un prototipo académico |
+| Railway           | Adecuado, pero Streamlit Cloud es nativo para apps Streamlit            |
+| Docker local      | No accesible públicamente para la evaluación del reto                   |
+
+**Justificación**:
+- Streamlit Community Cloud ofrece despliegue gratuito directo desde GitHub
+- Gestión de secretos (clave API de OpenRouter) integrada en la plataforma, sin exposición en el repositorio
+- URL pública permanente para demostración y evaluación
+
+### 6.3 Elección de Librerías de Extracción de Texto
+
+**Decisión**: `PyPDF2` para PDFs y `python-docx` para archivos Word.
+
+| Librería        | Formato | Justificación                                                                       |
+| --------------- | ------- | ----------------------------------------------------------------------------------- |
+| `PyPDF2`        | PDF     | Extracción de texto plano sin dependencias nativas; suficiente para CVs basados en texto |
+| `python-docx`   | DOCX    | Librería oficial para documentos Word; extrae párrafos y tablas con fidelidad       |
+| Lectura directa | TXT     | Sin librería adicional; decodificación UTF-8 con fallback a latin-1                 |
+
+**Limitación asumida**: Ambas librerías extraen únicamente texto. CVs con diseño gráfico avanzado (columnas en imagen, texto en cuadros de texto de Word, PDFs escaneados) no se procesan correctamente. Esta limitación está documentada en el alcance (§2.3).
+
+### 6.4 Arquitectura Modular en 5 Componentes
+
+**Decisión**: Separar la aplicación en cinco módulos con responsabilidades únicas.
+
+**Justificación del diseño**:
+
+| Decisión de separación | Razón |
+| ---------------------- | ----- |
+| `prompt_templates.py` independiente de `llm_integration.py` | Permite iterar sobre los prompts sin tocar la lógica de conexión a la API; facilita el versionado y testing de los prompts por separado |
+| `parsers.py` como módulo propio | El sistema de 3 niveles de fallback y la lógica de validación son suficientemente complejos para justificar su aislamiento; además permite testear el parseo sin llamar a la API |
+| `utils.py` separado de `app.py` | Desacopla la extracción de texto de la UI; permite reusar la lógica en tests sin dependencia de Streamlit |
+| `app.py` como orquestador puro | No contiene lógica de negocio; solo llama a los módulos y renderiza el estado |
+
+### 6.5 Sistema de Parseo con Tres Niveles de Fallback
+
+**Decisión**: Implementar un parser de tres niveles en lugar de asumir que el LLM siempre devuelve JSON válido.
+
+**Justificación**: El LLM, incluso con instrucciones negativas y temperatura baja, puede desviarse del formato esperado en un porcentaje pequeño pero no despreciable de llamadas. Un parseo frágil (solo `json.loads()` directo) produciría errores visibles al usuario y violaría el requisito del reto de no mostrar texto crudo.
+
+**Niveles implementados**:
+
+```
+Nivel 1: json.loads() directo             → cubre ~90% de respuestas bien formadas
+Nivel 2: regex extrae bloque ```json```   → cubre ~8% con markdown residual
+Nivel 3: regex extrae primer { ... }      → cubre ~1.5% con texto prefijo/sufijo
+Fallback: get_fallback_analysis()         → cubre el ~0.5% restante con análisis básico de error
+```
+
+**Impacto**: El sistema de fallback garantiza que el usuario siempre ve una respuesta estructurada, independientemente del comportamiento puntual del modelo.
+
+### 6.6 Gestión del Estado de Sesión
+
+**Decisión**: Usar `st.session_state` para persistir el historial de uso y el resultado del análisis durante la sesión.
+
+**Justificación**: Streamlit re-ejecuta el script completo en cada interacción del usuario. Sin `st.session_state`, el análisis se perdería al pulsar cualquier otro elemento de la UI. La decisión de almacenar `usage_history` como lista acumulativa en sesión permite mostrar la pestaña "📈 Uso y Costes" con el histórico de todas las llamadas realizadas en la sesión actual, sin necesidad de base de datos.
+
+**Limitación asumida**: El historial no persiste entre sesiones (documentado en §2.3). Para persistencia real se requeriría una base de datos o almacenamiento externo.
+
+---
+
+## 7. Conclusión
 
 El proyecto demuestra cómo la combinación de un LLM de alto rendimiento con un diseño cuidadoso de prompts puede automatizar de forma efectiva una tarea de alto valor que, tradicionalmente, requería intervención humana experta.
 

@@ -47,7 +47,7 @@
 
 #### 3.1 Arquitectura General
 
-```
+```text
 Usuario → Streamlit UI → CVAnalyzer → Groq API (Llama 3.1) → Parsers → Visualización
 ```
 
@@ -107,7 +107,7 @@ Usuario → Streamlit UI → CVAnalyzer → Groq API (Llama 3.1) → Parsers →
 
 #### 4.2 Flujo de Comunicación App/LLM
 
-```
+```text
 1. Usuario sube CV → 2. Extracción de texto →
 3. Limpieza y normalización → 4. Creación de prompt →
 5. Llamada a Groq API → 6. Respuesta del LLM →

@@ -57,7 +57,7 @@ Artificial Intelligence Foundations | Fundació URV | Mayo 2026
 
 ### Stack tecnológico
 
-```
+```text
 Usuario → Streamlit UI → CVAnalyzer → OpenRouter API (Gemini 3.1 Flash Lite)
                                 ↓
                           parsers.py → Visualización Streamlit
@@ -67,12 +67,34 @@ Usuario → Streamlit UI → CVAnalyzer → OpenRouter API (Gemini 3.1 Flash Lit
 |---|---|---|
 | Frontend | Streamlit | UI, upload, visualización |
 | LLM | Gemini 3.1 Flash Lite (OpenRouter) | Análisis del CV |
-| Parseo | parsers.py | Extracción JSON + fallback |
+| Extracción PDF | PyPDF2 | Lectura de texto de archivos PDF |
+| Extracción DOCX | python-docx | Lectura de archivos Word |
+| Parseo | parsers.py | Extracción JSON + 3 niveles de fallback |
 | Prompting | prompt_templates.py | 7 técnicas de PE |
+| Despliegue | Streamlit Community Cloud | Hosting gratuito desde GitHub |
 
 ---
 
-## Diapositiva 5 — Prompt Engineering (1/2)
+## Diapositiva 5 — Decisiones Técnicas Clave
+
+### ¿Por qué estas tecnologías y no otras?
+
+| Decisión | Elegido | Descartado | Razón |
+|---|---|---|---|
+| **Framework UI** | Streamlit | FastAPI+React, Gradio | Python puro, componentes nativos, despliegue integrado |
+| **Modelo LLM** | Gemini 3.1 Flash Lite | Llama 3.1 70B (Groq), GPT-3.5 | Groq deprecated el modelo; OpenAI requiere tarjeta |
+| **API de LLM** | OpenRouter | Groq, OpenAI direct | Gratuito (500 req/día), compatible con SDK OpenAI |
+| **Despliegue** | Streamlit Cloud | Heroku, AWS, Railway | Gratuito, nativo para Streamlit, secrets integrados |
+| **Parseo** | 3 niveles de fallback | json.loads() simple | El LLM se desvía ocasionalmente; fallback evita errores |
+
+### Decisión más crítica: temperatura 0.2
+
+> Reducir temperatura de **0.7 → 0.2** eliminó prácticamente todos los fallos de parseo JSON
+> → Coherencia y determinismo por encima de creatividad en tareas estructuradas
+
+---
+
+## Diapositiva 6 — Prompt Engineering (1/2)
 
 ### Técnicas aplicadas y su impacto
 
@@ -84,7 +106,8 @@ Usuario → Streamlit UI → CVAnalyzer → OpenRouter API (Gemini 3.1 Flash Lit
 | **Output Schema JSON** | Elimina campos renombrados y tipos erróneos |
 
 **Ejemplo — Role Prompting**:
-```
+
+```text
 SYSTEM: "Eres un experto senior en recursos humanos y revisión de CVs
 con más de 15 años de experiencia. Siempre proporcionas respuestas
 ÚNICAMENTE en formato JSON válido."
@@ -92,7 +115,7 @@ con más de 15 años de experiencia. Siempre proporcionas respuestas
 
 ---
 
-## Diapositiva 6 — Prompt Engineering (2/2)
+## Diapositiva 7 — Prompt Engineering (2/2)
 
 ### Técnicas aplicadas y su impacto (continuación)
 
@@ -104,7 +127,8 @@ con más de 15 años de experiencia. Siempre proporcionas respuestas
 | **Temperature = 0.2** | Reduce fallos de parseo de ~30% a <5% |
 
 **Ejemplo — Instrucción Negativa**:
-```
+
+```text
 CRÍTICO: Devuelve ÚNICAMENTE el objeto JSON.
 Cero texto antes ni después. No uses bloques ```json.
 Si el JSON no puede parsearse directamente, tu respuesta es inválida.
@@ -112,7 +136,7 @@ Si el JSON no puede parsearse directamente, tu respuesta es inválida.
 
 ---
 
-## Diapositiva 7 — Parseo y Mapeo del Output
+## Diapositiva 8 — Parseo y Mapeo del Output
 
 ### Requisito del reto: NO mostrar texto crudo
 
@@ -138,7 +162,7 @@ Respuesta del LLM
 
 ---
 
-## Diapositiva 8 — Resultados y Validación
+## Diapositiva 9 — Resultados y Validación
 
 ### Ejemplo de análisis real
 
@@ -156,7 +180,7 @@ Respuesta del LLM
 
 ---
 
-## Diapositiva 9 — Conclusiones
+## Diapositiva 10 — Conclusiones
 
 ### Lo que aprendimos
 
@@ -179,13 +203,13 @@ Respuesta del LLM
 
 ---
 
-## Diapositiva 10 — Cierre
+## Diapositiva 11 — Cierre
 
 # ¡Gracias!
 
 ### 🔗 Links del proyecto
 
-- **App en Streamlit**: `[enlace en streamlit.txt]`
+- **App en Streamlit**: https://cv-assistant-ai-ynjx6qsnd6prgwq3m4dipz.streamlit.app/
 - **Repositorio GitHub**: https://github.com/jamarcas1984/cv-assistant-ai
 - **Vídeo demo**: `[enlace en video.txt]`
 
