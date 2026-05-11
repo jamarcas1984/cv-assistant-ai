@@ -11,7 +11,6 @@ from utils import clean_cv_text, extract_text_from_file
 # Configuración de la página
 st.set_page_config(
     page_title="CV Assistant AI",
-    page_icon="💭",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -268,10 +267,14 @@ def main():
     init_session_state()
 
     # Título
-    st.markdown("# 🎯 CV Assistant AI")
-    st.markdown(
-        "### Asistente inteligente para revisión y mejora de currículums vitae"
-    )
+    col_img, col_title = st.columns([1, 5])
+    with col_img:
+        st.image("src/assets/curriculum-vitae.png", width=84)
+    with col_title:
+        st.markdown("# CV Assistant AI")
+        st.markdown(
+            "### Asistente inteligente para revisión y mejora de currículums vitae"
+        )
     st.markdown("---")
 
     # Sidebar
