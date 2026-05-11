@@ -84,3 +84,9 @@ site/
 *.orig
 
 mcp-drawio-aws
+create_demo_video.py
+demo_screenshots
+slides.html
+fix_img_src.py
+generate_slides.py
+html_to_pdf.py
