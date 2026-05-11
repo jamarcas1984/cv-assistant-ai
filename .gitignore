@@ -82,3 +82,5 @@ site/
 *.tmp
 *.bak
 *.orig
+
+mcp-drawio-aws
