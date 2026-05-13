@@ -85,7 +85,7 @@ site/
 
 mcp-drawio-aws
 create_demo_video.py
-demo_*
+demo*
 slides.html
 fix_img_src.py
 generate_slides.py
